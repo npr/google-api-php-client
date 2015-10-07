@@ -79,9 +79,8 @@ class BaseTest extends PHPUnit_Framework_TestCase
   {
     $client = $this->getClient();
     $cache = $client->getCache();
-    $token = $cache->get('access_token');
 
-    if (!$token) {
+    if (!$token = $cache->get('access_token')) {
       if (!$token = $this->tryToGetAnAccessToken($client)) {
         return $this->markTestSkipped("Test requires access token");
       }
@@ -90,14 +89,18 @@ class BaseTest extends PHPUnit_Framework_TestCase
 
     $client->setAccessToken($token);
 
+    if ($client->isAccessTokenExpired()) {
+      // as long as we have client credentials, even if its expired
+      // our access token will automatically be refreshed
+      $this->checkClientCredentials();
+    }
+
     return true;
   }
 
   public function tryToGetAnAccessToken(Google_Client $client)
   {
-    if (!($client->getClientId() && $client->getClientSecret())) {
-      $this->markTestSkipped("Test requires GCLOUD_CLIENT_ID and GCLOUD_CLIENT_SECRET to be set");
-    }
+    $this->checkClientCredentials();
 
     $client->setRedirectUri("urn:ietf:wg:oauth:2.0:oob");
     $client->setConfig('access_type', 'offline');
@@ -123,6 +126,14 @@ class BaseTest extends PHPUnit_Framework_TestCase
     $clientSecret = getenv('GCLOUD_CLIENT_SECRET') ? getenv('GCLOUD_CLIENT_SECRET') : null;
 
     return array($clientId, $clientSecret);
+  }
+
+  public function checkClientCredentials()
+  {
+    list($clientId, $clientSecret) = $this->getClientIdAndSecret();
+    if (!($clientId && $clientSecret)) {
+      $this->markTestSkipped("Test requires GCLOUD_CLIENT_ID and GCLOUD_CLIENT_SECRET to be set");
+    }
   }
 
   public function checkServiceAccountCredentials()

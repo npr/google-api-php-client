@@ -190,6 +190,12 @@ class Google_Service_Resource
     $http = $this->client->getHttpClient();
     $this->client->authorize($http);
 
+    // Guzzle 5 cannot locate App Engine certs by default,
+    // so we tell Guzzle where to look
+    if ($this->client->isAppEngine()) {
+      $http->setDefaultOption('verify', '/etc/ca-certificates.crt');
+    }
+
     $request = $http->createRequest(
         $method['httpMethod'],
         $url,
