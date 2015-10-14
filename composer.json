@@ -1,9 +1,8 @@
 {
-    "name": "google/apiclient",
+    "name": "techvein/google-api-php-client",
     "type": "library",
     "description": "Client library for Google APIs",
-    "keywords": ["google"],
-    "homepage": "http://developers.google.com/api-client-library/php",
+    "keywords": ["google", "tech-vein"],
     "license": "Apache-2.0",
     "require": {
         "php": ">=5.2.1"
