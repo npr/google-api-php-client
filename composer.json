@@ -1,5 +1,5 @@
 {
-    "name": "npr-google/apiclient",
+    "name": "npr/apiclient",
     "type": "library",
     "description": "Client library for Google APIs",
     "keywords": ["google"],
